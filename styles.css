@@ -605,7 +605,8 @@ figure { margin: 0; }
   .b5 { aspect-ratio: 1; }
   .b6 { flex-direction: column; justify-content: space-between; align-items: flex-start; padding: 18px; }
   .b6 .bento__more { flex-direction: column; align-items: flex-start; gap: 8px; font-size: 26px; }
-  .b6 .bento__note { font-size: 12.5px; line-height: 1.4; }
+  .b6 .bento__note { display: none; }
+  .b6 { justify-content: center; }
   .proj__card { grid-template-columns: 1fr; }
   .band__stage { display: none; }
 }
