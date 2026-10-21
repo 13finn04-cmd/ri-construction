@@ -1,10 +1,11 @@
 // Scroll-driven 3D hammer for the "How a job goes" section (same engine as the JT Boxing glove).
-// Desktop only (fine pointer, wider than 760px, motion allowed). Phones and
-// reduced-motion visitors keep the static hammer image; see DESIGN.md "Motion".
+// Desktop (fine pointer, wider than 760px): the section pins and the hammer turns through 4 steps.
+// Phones: no pinning; the hammer turns and swings as the section scrolls past, and a finger drag spins it.
+// The 3D engine and model only download when the section gets close. Reduced motion keeps the still image.
 const section = document.querySelector('[data-process]');
-const ok = section
-  && window.matchMedia('(min-width: 761px) and (pointer: fine)').matches
-  && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const ok = section && !still && window.matchMedia('(min-width: 761px) and (pointer: fine)').matches;
+const phone = section && !still && !ok;
 
 if (section) {
   const phases = [...section.querySelectorAll('[data-phase]')];
@@ -25,12 +26,27 @@ if (section) {
     setPhase(Math.min(phases.length - 1, Math.floor(progress * phases.length)));
   };
 
+  const fail = () => { section.classList.remove('is-3d'); section.querySelector('canvas')?.remove(); };
   if (ok) {
     section.classList.add('is-live');
     window.addEventListener('scroll', measure, { passive: true });
     window.addEventListener('resize', measure);
     measure();
-    start().catch(() => { section.classList.remove('is-3d'); section.querySelector('canvas')?.remove(); });
+    start().catch(fail);
+  } else if (phone) {
+    // progress = how far the section has travelled through the screen
+    const track = () => {
+      const r = section.getBoundingClientRect();
+      progress = Math.min(1, Math.max(0, (window.innerHeight - r.top) / (window.innerHeight + r.height)));
+    };
+    window.addEventListener('scroll', track, { passive: true });
+    track();
+    const near = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      near.disconnect();
+      start().catch(fail);
+    }, { rootMargin: '700px 0px' });
+    near.observe(section);
   } else {
     setPhase(0);
   }
@@ -40,7 +56,7 @@ if (section) {
     const { THREE, GLTFLoader, RoomEnvironment } = await import(new URL('./engine3d.js', import.meta.url).href);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, phone ? 1.5 : 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.0;
@@ -87,10 +103,23 @@ if (section) {
     resize();
 
     const mouse = { x: 0, y: 0 };
-    window.addEventListener('pointermove', (e) => {
-      mouse.x = e.clientX / window.innerWidth - 0.5;
-      mouse.y = e.clientY / window.innerHeight - 0.5;
-    }, { passive: true });
+    let spin = 0, spinV = 0, dragX = null;
+    if (ok) {
+      window.addEventListener('pointermove', (e) => {
+        mouse.x = e.clientX / window.innerWidth - 0.5;
+        mouse.y = e.clientY / window.innerHeight - 0.5;
+      }, { passive: true });
+    } else {
+      // finger drag spins the hammer; vertical swipes still scroll the page (touch-action: pan-y)
+      stage.addEventListener('pointerdown', (e) => { dragX = e.clientX; spinV = 0; });
+      stage.addEventListener('pointermove', (e) => {
+        if (dragX == null) return;
+        const dx = e.clientX - dragX; dragX = e.clientX;
+        spin += dx * 0.012; spinV = dx * 0.012;
+      });
+      const up = () => { dragX = null; };
+      stage.addEventListener('pointerup', up); stage.addEventListener('pointercancel', up); stage.addEventListener('pointerleave', up);
+    }
 
     let visible = false, raf = 0;
     const t0 = performance.now();
@@ -107,7 +136,8 @@ if (section) {
       // the hammer turns through the steps and swings once in the middle of each one
       const phaseT = (progress * phases.length) % 1;
       const strike = Math.sin(Math.min(1, Math.max(0, (phaseT - 0.4) / 0.25)) * Math.PI);
-      const targetY = -0.7 + progress * Math.PI * 1.25 + mouse.x * 0.45;
+      if (dragX == null) { spin += spinV; spinV *= 0.94; }
+      const targetY = -0.7 + progress * Math.PI * 1.25 + mouse.x * 0.45 + spin;
       const targetX = 0.1 + mouse.y * 0.3;
       const targetZ = -0.25 - strike * 0.55;
       rot.y += (targetY - rot.y) * 0.08;

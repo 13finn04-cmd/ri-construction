@@ -697,3 +697,9 @@ figure { margin: 0; }
   .f4 { width: 46vw; aspect-ratio: 4 / 5; right: -6vw; left: auto; bottom: 24px; top: auto; rotate: -6deg; }
   .f6 { display: block; width: 38vw; aspect-ratio: 1; left: 5vw; right: auto; bottom: 8px; top: auto; rotate: 5deg; }
 }
+
+/* phones: 3D hammer (Finn, 10/21) */
+@media (max-width: 760px) {
+  .process__stage { height: 380px; touch-action: pan-y; }
+  .process__stage canvas { touch-action: pan-y; }
+}
