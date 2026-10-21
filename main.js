@@ -56,6 +56,55 @@
     }));
   });
 
+  // ---- floating photo collage with 3D depth (vanilla port of 21st.dev parallax-floating) ----
+  // Desktop: follows the mouse. Phones: follows your finger, scrolling, and phone tilt where the browser allows it.
+  const floating = document.querySelector('[data-floating]');
+  if (floating && !reduced && getComputedStyle(floating).display !== 'none') {
+    const sens = parseFloat(floating.dataset.sensitivity || '1');
+    const items = [...floating.querySelectorAll('[data-depth]')]
+      .filter((el) => getComputedStyle(el).display !== 'none')
+      .map((el) => ({ el, depth: parseFloat(el.dataset.depth), x: 0, y: 0, rx: 0, ry: 0 }));
+    const aim = { x: 0, y: 0 }; // -1..1 from the centre of the hero
+    const fine = matchMedia('(pointer: fine)').matches;
+    const setAim = (cx, cy) => {
+      const r = floating.getBoundingClientRect();
+      aim.x = Math.max(-1, Math.min(1, (cx - r.left - r.width / 2) / (r.width / 2)));
+      aim.y = Math.max(-1, Math.min(1, (cy - r.top - r.height / 2) / (r.height / 2)));
+    };
+    if (fine) {
+      addEventListener('mousemove', (e) => setAim(e.clientX, e.clientY), { passive: true });
+    } else {
+      let tilt = false;
+      const touch = (e) => { if (!tilt && e.touches[0]) setAim(e.touches[0].clientX, e.touches[0].clientY); };
+      addEventListener('touchstart', touch, { passive: true });
+      addEventListener('touchmove', touch, { passive: true });
+      addEventListener('touchend', () => { if (!tilt) { aim.x = 0; aim.y = 0; } }, { passive: true });
+      // phone tilt (Android and others that allow it without a prompt)
+      addEventListener('deviceorientation', (e) => {
+        if (e.gamma == null) return;
+        tilt = true;
+        aim.x = Math.max(-1, Math.min(1, e.gamma / 25));
+        aim.y = Math.max(-1, Math.min(1, (e.beta - 45) / 25));
+      }, { passive: true });
+    }
+    const amp = fine ? 34 : 16;   // px of drift per unit of depth
+    const turn = fine ? 7 : 12;   // degrees of 3D tilt at the edge
+    let on = true;
+    new IntersectionObserver(([e]) => { on = e.isIntersecting; if (on) requestAnimationFrame(tick); }).observe(floating);
+    function tick() {
+      const sy = fine ? 0 : scrollY;
+      for (const it of items) {
+        const tx = -aim.x * amp * it.depth * -sens, ty = -aim.y * amp * it.depth * -sens;
+        it.x += (tx - it.x) * 0.07; it.y += (ty - it.y) * 0.07;
+        it.rx += (-aim.y * turn - it.rx) * 0.07; it.ry += (aim.x * turn - it.ry) * 0.07;
+        // deeper photos also slide slower on scroll, so the stack reads as 3D
+        it.el.style.transform = `translate3d(${it.x.toFixed(2)}px, ${(it.y - sy * it.depth * 0.18).toFixed(2)}px, 0) rotateX(${it.rx.toFixed(2)}deg) rotateY(${it.ry.toFixed(2)}deg)`;
+      }
+      if (on) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
   // ---- before/after drag sliders (both photos lined up to the same angle) ----
   document.querySelectorAll('[data-slider]').forEach((s) => {
     const r = s.querySelector('.slider__range');
@@ -148,29 +197,6 @@
       h.classList.add('is-split');
       requestAnimationFrame(() => requestAnimationFrame(() => h.classList.add('is-in')));
     });
-
-    // floating collage drifts with the mouse (vanilla port of 21st.dev parallax-floating)
-    const floating = document.querySelector('[data-floating]');
-    if (floating) {
-      const sens = parseFloat(floating.dataset.sensitivity || '1');
-      const items = [...floating.querySelectorAll('[data-depth]')].map((el) => ({ el, depth: parseFloat(el.dataset.depth), x: 0, y: 0 }));
-      const mouse = { x: 0, y: 0 };
-      addEventListener('mousemove', (e) => {
-        const r = floating.getBoundingClientRect();
-        mouse.x = e.clientX - r.left - r.width / 2; mouse.y = e.clientY - r.top - r.height / 2;
-      }, { passive: true });
-      let on = true;
-      new IntersectionObserver(([e]) => { on = e.isIntersecting; if (on) requestAnimationFrame(tick); }).observe(floating);
-      function tick() {
-        for (const it of items) {
-          const k = (it.depth * sens) / 20;
-          it.x += (mouse.x * k - it.x) * 0.05; it.y += (mouse.y * k - it.y) * 0.05;
-          it.el.style.transform = `translate3d(${it.x.toFixed(2)}px, ${it.y.toFixed(2)}px, 0)`;
-        }
-        if (on) requestAnimationFrame(tick);
-      }
-      requestAnimationFrame(tick);
-    }
 
     // cursor spotlight
     document.querySelectorAll('.fx, .ways a, .faq details, .est__out').forEach((el) => {

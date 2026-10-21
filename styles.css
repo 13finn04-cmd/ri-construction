@@ -662,3 +662,28 @@ figure { margin: 0; }
   .logo__sub { font-size: 9.5px; }
   .ticket dt, .slider__tag, .pair figcaption { font-size: 11.5px; }
 }
+
+/* ---- phones: floating 3D photo collage behind the hero (Finn, 10/21) ---- */
+@media (max-width: 760px) {
+  .hero { padding-block: 250px 250px; }
+  .hero__float { display: block; perspective: 800px; }
+  .hero__strip { display: none; }
+  .hero__in { text-align: center; justify-items: center; }
+  .hero__in::before { content: ""; position: absolute; z-index: -1; inset: -36px -28px; background: radial-gradient(closest-side, var(--paper) 72%, oklch(0.972 0.008 80 / 0)); pointer-events: none; }
+  .hero__p { margin-inline: auto; }
+  .hero__btns { justify-items: center; }
+  .proof { justify-content: center; text-align: left; }
+  .float { opacity: 1 !important; }
+  .float img { box-shadow: 0 18px 36px -18px oklch(0.2 0.03 55 / .5); }
+  .f1 { display: block; width: 44vw; aspect-ratio: 3 / 4; left: -9vw; top: 14px; rotate: -7deg; }
+  .f2 { display: block; width: 50vw; aspect-ratio: 4 / 3; right: -11vw; top: 54px; rotate: 6deg; }
+  .f3 { display: block; width: 48vw; aspect-ratio: 4 / 3; left: -11vw; bottom: 34px; rotate: 4deg; }
+  .f4 { display: block; width: 36vw; aspect-ratio: 4 / 5; right: -7vw; bottom: 16px; rotate: -6deg; }
+  .f5, .f6 { display: none; }
+}
+@media (max-width: 760px) and (prefers-reduced-motion: reduce) { .float { transform: none !important; } }
+@media (max-width: 760px) {
+  .hero__btns { width: 100%; max-width: 340px; margin-inline: auto; grid-template-columns: 1fr; justify-content: stretch; }
+  .hero__btns .btn { width: 100%; }
+  .proof { width: 100%; max-width: 350px; margin-inline: auto; }
+}
