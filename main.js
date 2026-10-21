@@ -65,6 +65,9 @@
       .filter((el) => getComputedStyle(el).display !== 'none')
       .map((el) => ({ el, depth: parseFloat(el.dataset.depth), x: 0, y: 0, rx: 0, ry: 0 }));
     const aim = { x: 0, y: 0 }; // -1..1 from the centre of the hero
+    // on scroll, photos above the text drift up and photos below drift down, so they never slide over the words
+    const fr = floating.getBoundingClientRect();
+    items.forEach((it) => { const r = it.el.getBoundingClientRect(); it.out = (r.top + r.height / 2) < fr.top + fr.height / 2 ? -1 : 1; });
     const fine = matchMedia('(pointer: fine)').matches;
     const setAim = (cx, cy) => {
       const r = floating.getBoundingClientRect();
@@ -97,8 +100,8 @@
         const tx = -aim.x * amp * it.depth * -sens, ty = -aim.y * amp * it.depth * -sens;
         it.x += (tx - it.x) * 0.07; it.y += (ty - it.y) * 0.07;
         it.rx += (-aim.y * turn - it.rx) * 0.07; it.ry += (aim.x * turn - it.ry) * 0.07;
-        // deeper photos also slide slower on scroll, so the stack reads as 3D
-        it.el.style.transform = `translate3d(${it.x.toFixed(2)}px, ${(it.y - sy * it.depth * 0.18).toFixed(2)}px, 0) rotateX(${it.rx.toFixed(2)}deg) rotateY(${it.ry.toFixed(2)}deg)`;
+        // deeper photos move further on scroll, so the stack reads as 3D
+        it.el.style.transform = `translate3d(${it.x.toFixed(2)}px, ${(it.y + it.out * sy * it.depth * 0.14).toFixed(2)}px, 0) rotateX(${it.rx.toFixed(2)}deg) rotateY(${it.ry.toFixed(2)}deg)`;
       }
       if (on) requestAnimationFrame(tick);
     }

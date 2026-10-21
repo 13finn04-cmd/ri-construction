@@ -687,3 +687,13 @@ figure { margin: 0; }
   .hero__btns .btn { width: 100%; }
   .proof { width: 100%; max-width: 350px; margin-inline: auto; }
 }
+/* phones: bigger collage, three photos above the text and three below (Finn, 10/21) */
+@media (max-width: 760px) {
+  .hero { padding-block: 360px 360px; }
+  .f1 { width: 54vw; aspect-ratio: 3 / 4; left: -7vw; top: 6px; bottom: auto; rotate: -6deg; }
+  .f2 { width: 58vw; aspect-ratio: 4 / 3; right: -9vw; left: auto; top: 26px; bottom: auto; rotate: 5deg; }
+  .f5 { display: block; width: 46vw; aspect-ratio: 16 / 10; right: 5vw; left: auto; top: 186px; bottom: auto; rotate: -3deg; }
+  .f3 { width: 60vw; aspect-ratio: 4 / 3; left: -9vw; right: auto; bottom: 128px; top: auto; rotate: 4deg; }
+  .f4 { width: 46vw; aspect-ratio: 4 / 5; right: -6vw; left: auto; bottom: 24px; top: auto; rotate: -6deg; }
+  .f6 { display: block; width: 38vw; aspect-ratio: 1; left: 5vw; right: auto; bottom: 8px; top: auto; rotate: 5deg; }
+}
