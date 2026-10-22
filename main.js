@@ -157,7 +157,7 @@
       const notes = form.notes.value.trim();
       const name = form.name.value.trim();
       let what = jobs.length ? jobs.join(', ').replace(/, ([^,]*)$/, ' and $1') : 'a project';
-      let m = `Hi RI Construction, ${name ? `this is ${name}. ` : ''}I'd like a free estimate for ${what}`;
+      let m = `Hi RI Construction Paving & Excavation, ${name ? `this is ${name}. ` : ''}I'd like a free estimate for ${what}`;
       m += town ? ` in ${town}.` : '.';
       if (when) m += ` Timing: ${when}.`;
       if (notes) m += `\n${notes}`;

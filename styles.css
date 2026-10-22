@@ -76,11 +76,7 @@ figure { margin: 0; }
 .nav.is-scrolled { border-bottom-color: var(--line); }
 .nav__in { max-width: 1280px; margin-inline: auto; padding: 14px var(--gutter); display: flex; align-items: center; gap: 28px; }
 .logo { display: inline-flex; align-items: center; gap: 11px; text-decoration: none; color: var(--ink); }
-.logo .mark { width: 40px; height: 32px; color: var(--bronze); flex: none; }
-.logo__text { display: grid; gap: 3px; }
-.logo__name { font: 800 23px/0.85 var(--display); text-transform: uppercase; letter-spacing: 0.02em; color: var(--bronze-ink); }
-.logo__name b { color: var(--ink); font-weight: 800; }
-.logo__sub { font: 700 9.5px/1 var(--body); letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.logo__img { display: block; height: 54px; width: auto; }
 .nav__links { display: flex; gap: 6px; margin-left: auto; }
 .nav__links a { text-decoration: none; font-weight: 600; font-size: 15.5px; padding: 10px 14px; border-radius: 999px; color: var(--text); transition: background .2s; }
 .nav__links a:hover { background: var(--paper-2); }
@@ -241,9 +237,7 @@ figure { margin: 0; }
 .foot { background: var(--ink); color: var(--muted-light); border-top: 1px solid var(--line-light); padding-top: 64px; }
 .foot__in { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 40px; }
 .foot .logo { color: var(--on-ink); }
-.foot .logo__name b { color: var(--on-ink); }
-.foot .logo__name { color: var(--bronze-hi); }
-.foot .logo__sub { color: var(--muted-light); }
+.foot .logo__img { height: 60px; }
 .foot__brand { display: grid; gap: 18px; align-content: start; }
 .foot__facts { display: grid; gap: 8px; font-size: 15px; }
 .foot__facts li, .foot__list a { display: inline-flex; gap: 10px; align-items: center; }
@@ -382,9 +376,7 @@ figure { margin: 0; }
   .nav__phone span, .nav__cta .btn { display: none; }
   .nav__phone { width: 46px; height: 46px; border-radius: 999px; border: 1.5px solid var(--line); justify-content: center; }
   .nav__in { padding-block: 10px; gap: 12px; }
-  .logo .mark { width: 34px; height: 28px; }
-  .logo__name { font-size: 21px; }
-  .logo__sub { font-size: 8.5px; letter-spacing: .12em; }
+  .logo__img { height: 40px; }
   .hero { padding-top: 20px; }
   .hero__in { gap: 28px; }
   .hero__art { order: -1; }
@@ -554,6 +546,7 @@ figure { margin: 0; }
 .quote-band figure { display: grid; gap: 28px; }
 .quote-band blockquote { margin: 0; font: 800 clamp(36px, 5.4vw, 80px)/0.98 var(--display); text-transform: uppercase; color: var(--ink); max-width: 20ch; text-wrap: balance; }
 .quote-band figcaption .logo { pointer-events: none; }
+.quote-band .logo__img { height: 64px; }
 [data-scrub] .w { color: oklch(0.24 0.012 60 / .16); transition: color .35s var(--ease); }
 [data-scrub] .w.is-lit { color: var(--ink); }
 
@@ -659,7 +652,6 @@ figure { margin: 0; }
   .foot__list { gap: 0; }
   .link { min-height: 44px; padding-bottom: 0; align-items: center; }
   .logo { min-height: 44px; }
-  .logo__sub { font-size: 9.5px; }
   .ticket dt, .slider__tag, .pair figcaption { font-size: 11.5px; }
 }
 
